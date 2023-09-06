@@ -62,9 +62,3 @@ exports.typingTestsRouter.get("/:id", (req, res) => __awaiter(void 0, void 0, vo
         res.json({ error });
     }
 }));
-exports.typingTestsRouter.post("/add", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-    }
-    finally {
-    }
-}));
