@@ -15,7 +15,7 @@ const prisma_1 = require("../../lib/prisma");
 exports.scoresRouter = (0, express_1.Router)();
 exports.scoresRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const typingTests = yield prisma_1.prisma.typingTest.findMany();
+        const typingTests = yield prisma_1.prisma.score.findMany();
         res.json(typingTests);
     }
     catch (error) {

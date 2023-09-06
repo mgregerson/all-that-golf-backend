@@ -5,7 +5,7 @@ export const scoresRouter = Router();
 
 scoresRouter.get("/", async (req, res) => {
   try {
-    const typingTests = await prisma.typingTest.findMany();
+    const typingTests = await prisma.score.findMany();
     res.json(typingTests);
   } catch (error) {
     res.json({ error });
