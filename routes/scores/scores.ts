@@ -12,11 +12,14 @@ scoresRouter.get("/", async (req, res) => {
   }
 });
 
+scoresRouter.get(`/:id/`);
+
 scoresRouter.post("/add", async (req, res) => {
+  console.log(req.body, "REQ BODY BB");
   try {
     const {
-      user,
-      typingTest,
+      userId,
+      typingTestId,
       wpm,
       accuracy,
       timeTaken,
@@ -24,10 +27,12 @@ scoresRouter.post("/add", async (req, res) => {
       wordsCorrect,
       totalWords,
     } = req.body;
+    // You can validate userId and typingTestId here to ensure they exist and are valid.
+
     const newScore = await prisma.score.create({
       data: {
-        user: { connect: { id: user } },
-        typingTest: { connect: { id: typingTest } },
+        userId,
+        typingTestId,
         wpm,
         accuracy,
         timeTaken,
@@ -36,8 +41,12 @@ scoresRouter.post("/add", async (req, res) => {
         totalWords,
       },
     });
+
     res.json(newScore);
   } catch (error) {
-    res.json({ error });
+    console.error("Error creating score:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while creating the score." });
   }
 });
