@@ -9,47 +9,129 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-
 model User {
-  id          Int         @id @default(autoincrement())
-  username    String      @unique
-  email       String      @unique
-  password    String
-  firstName   String?
-  lastName    String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  scores      Score[]   
+  id            Int           @id @default(autoincrement())
+  username      String        @unique
+  email         String        @unique
+  password      String
+  firstName     String?
+  lastName      String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  userPayments  UserPayment[]
+  userAddresses UserAddress[]
+  Orders        Order[]
+  TeeTimes      TeeTime[]
 }
 
-model TypingTest {
-  id          Int         @id @default(autoincrement())
-  title       String
-  text        String
-  difficulty  Difficulty
-  scores      Score[]
+model UserAddress {
+  id              Int      @id @default(autoincrement())
+  userId          Int?
+  user            User?    @relation(fields: [userId], references: [id])
+  addressLine1    String
+  addressLine2    String?
+  city            String
+  state           String
+  country         String
+  zipCode         String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  telephoneNumber String?
 }
 
-model Score {
-  id              Int        @id @default(autoincrement())
-  user            User       @relation(fields: [userId], references: [id])
-  userId          Int
-  typingTest      TypingTest @relation(fields: [typingTestId], references: [id])
-  typingTestId    Int
-  wpm             Int
-  accuracy        Float
-  createdAt       DateTime   @default(now())
-  timeTaken       Int
-  mistakes        Int
-  wordsCorrect    Int
-  totalWords      Int
+model UserPayment {
+  id         Int      @id @default(autoincrement())
+  userId     Int?
+  user       User?    @relation(fields: [userId], references: [id])
+  cardNumber String
+  cardType   String
+  cardExpiry String
+  cardCvv    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
-enum Difficulty {
-  easy
-  medium
-  hard
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  SKU         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Price       Float
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+  userId     Int?
+  user       User?       @relation(fields: [userId], references: [id])
+  TotalPrice Float
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  cartItems  OrderItem[]
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int?
+  order     Order?   @relation(fields: [orderId], references: [id])
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Discount {
+  id              Int      @id @default(autoincrement())
+  name            String
+  description     String
+  discountCode    String
+  discountPercent Float
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  active          Boolean
+}
+
+model GolfCourse {
+  id                  Int      @id @default(autoincrement())
+  name                String
+  description         String
+  location            String
+  distanceInYards     String
+  price               Float
+  numHoles            Int
+  phoneNumber         String
+  image               String
+  GolfHoles           GolfHole[]
+  TeeTimes            TeeTime[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model GolfHole {
+  id                  Int      @id @default(autoincrement())
+  name                String?
+  GolfCourse          GolfCourse? @relation(fields: [golfCourseId], references: [id])
+  golfCourseId        Int?
+  description         String?
+  HoleNumber          Int
+  par                 Int
+  distanceInYards     Int
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model TeeTime {
+  id                  Int      @id @default(autoincrement())
+  golfCourseId        Int?
+  golfCourse          GolfCourse? @relation(fields: [golfCourseId], references: [id])
+  userId              Int?
+  user                User? @relation(fields: [userId], references: [id])
+  teeTime             DateTime
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
