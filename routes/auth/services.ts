@@ -51,6 +51,18 @@ export async function register(
 ) {
   const hashedPassword = await hash(password, 12);
 
+  // Check if a user with that username or email already exists
+
+  const foundUser = await prisma.user.findFirst({
+    where: {
+      OR: [{ username }, { email }],
+    },
+  });
+
+  if (foundUser) {
+    throw new Error("A user with this username or email already exists.");
+  }
+
   const user = await prisma.user.create({
     data: {
       username,

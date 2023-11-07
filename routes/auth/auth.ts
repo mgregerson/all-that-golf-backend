@@ -14,6 +14,8 @@ authRouter.post("/register", async (req, res) => {
       });
     }
 
+    console.log("in register");
+
     const user = await register(username, email, password);
 
     return res.json({
@@ -23,8 +25,16 @@ authRouter.post("/register", async (req, res) => {
         id: user.id,
       },
     });
-  } catch (error) {
-    return res.json({ error });
+  } catch (error: any) {
+    if (
+      error.message === "A user with this username or email already exists."
+    ) {
+      return res.status(400).json({
+        error: "A user with this username or email already exists.",
+      });
+    }
+    console.log(error, "ERROR IN /REGISTER");
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -36,6 +46,8 @@ authRouter.post("/login", async (req, res) => {
         error: "Please fill in all required fields",
       });
     }
+
+    console.log("in login");
     const foundUser = await login(email, password);
 
     if (foundUser) {
