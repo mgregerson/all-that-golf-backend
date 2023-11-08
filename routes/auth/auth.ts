@@ -18,13 +18,15 @@ authRouter.post("/register", async (req, res) => {
 
     const user = await register(username, email, password);
 
-    return res.json({
-      user: {
-        name: user.username,
-        email: user.email,
-        id: user.id,
-      },
-    });
+    const loginResult = await login(email, password);
+
+    if (loginResult.error) {
+      return res.status(401).json({
+        error: loginResult.error,
+      });
+    }
+
+    return res.json(loginResult);
   } catch (error: any) {
     if (
       error.message === "A user with this username or email already exists."
@@ -47,15 +49,16 @@ authRouter.post("/login", async (req, res) => {
       });
     }
 
-    console.log("in login");
-    const foundUser = await login(email, password);
+    const loginResult = await login(email, password);
 
-    if (foundUser) {
-      return res.json(foundUser);
-    } else {
-      throw new Error("Password is not correct");
+    if (loginResult.error) {
+      return res.status(401).json({
+        error: loginResult.error,
+      });
     }
+
+    return res.json(loginResult);
   } catch (error) {
-    return res.json({ error });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });

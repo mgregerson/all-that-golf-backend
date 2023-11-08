@@ -22,6 +22,7 @@ model User {
   lastName      String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  photoUrl      String?
   userPayments  UserPayment[]
   userAddresses UserAddress[]
   Orders        Order[]

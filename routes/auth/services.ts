@@ -10,37 +10,34 @@ export async function login(email: string, password: string) {
       },
     });
 
-    console.log(foundUser, "foundUser");
-
     if (!foundUser) {
-      throw new Error("A user with this username does not exist.");
+      throw new Error("User not found");
     }
 
     const isMatch = compareSync(password, foundUser.password);
 
-    console.log(isMatch, "isMatch");
-
-    if (isMatch) {
-      const token = sign(
-        { _id: foundUser.id?.toString(), username: foundUser.username },
-        process.env.SECRET_KEY as string,
-        {
-          expiresIn: "2 days",
-        }
-      );
-      return {
-        user: {
-          id: foundUser.id,
-          username: foundUser.username,
-          email: foundUser.email,
-        },
-        token,
-      };
-    } else {
-      throw new Error("Password is not correct");
+    if (!isMatch) {
+      throw new Error("Incorrect password");
     }
-  } catch (error) {
-    throw error;
+
+    const token = sign(
+      { _id: foundUser.id?.toString(), username: foundUser.username },
+      process.env.SECRET_KEY as string,
+      {
+        expiresIn: "2 days",
+      }
+    );
+
+    return {
+      user: {
+        id: foundUser.id,
+        username: foundUser.username,
+        email: foundUser.email,
+      },
+      token,
+    };
+  } catch (error: any) {
+    return { error: error.message };
   }
 }
 
@@ -50,6 +47,8 @@ export async function register(
   password: string
 ) {
   const hashedPassword = await hash(password, 12);
+
+  console.log("got into register");
 
   // Check if a user with that username or email already exists
 
